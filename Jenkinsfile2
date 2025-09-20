@@ -22,20 +22,13 @@ pipeline {
             }
         }
         
-        stage('Deploy') {
-            steps {
-                echo 'Deploying to EC2...'
-                sh 'docker build -t assessment-app .'
-            }
-        }
-        
         stage('Push to Docker Hub') {
             steps {
                 echo 'Pushing image to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh 'docker login -u AleenaSehar -p Aleena1234/'
-                    sh 'docker tag assessment-app AleenaSehar/assessment-app:latest'
-                    sh 'docker push AleenaSehar/assessment-app:latest'
+                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'docker tag assessment-app $DOCKER_USERNAME/assessment-app:latest'
+                    sh 'docker push $DOCKER_USERNAME/assessment-app:latest'
                     sh 'docker logout'
                 }
             }
