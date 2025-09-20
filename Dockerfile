@@ -5,7 +5,7 @@ WORKDIR /app
 # Install dependencies (copy only package files first for caching)
 COPY package*.json ./
 # If you use yarn, change to COPY yarn.lock and run yarn install
-RUN npm ci --only=production || npm install
+RUN npm install
 
 # Copy source and build
 COPY . .
