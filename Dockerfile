@@ -18,7 +18,7 @@ FROM nginx:stable-alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built assets from builder stage
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Optional: copy a custom nginx.conf if you need history pushState routing (React Router)
 # Uncomment and provide a nginx.conf file in repo root if used
