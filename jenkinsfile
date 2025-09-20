@@ -1,38 +1,44 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                checkout scm
+                git 'https://github.com/AleenaSehar/Assessment.git'
             }
         }
-
-        stage('Install dependencies') {
+        
+        stage('Build') {
             steps {
+                echo 'Building the application...'
                 sh 'npm install'
             }
         }
-
-        stage('Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
-
+        
         stage('Test') {
             steps {
-                sh 'npm test || echo "No tests found"'
+                echo 'Running tests...'
+                sh 'npm test || true'
             }
         }
-    }
-
-    post {
-        success {
-            echo '✅ Build finished successfully!'
+        
+        stage('Deploy') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t assessment-app .'
+            }
         }
-        failure {
-            echo '❌ Build failed. Check the logs.'
+        
+        stage('Push to Docker Hub') {
+            steps {
+                echo 'Pushing image to Docker Hub...'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'docker tag assessment-app $DOCKER_USERNAME/assessment-app:latest'
+                    sh 'docker push $DOCKER_USERNAME/assessment-app:latest'
+                    sh 'docker logout'
+                }
+            }
         }
     }
 }
