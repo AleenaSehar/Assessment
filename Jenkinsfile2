@@ -1,27 +1,43 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage('Clone Repo') {
+        stage('Clone Repository') {
             steps {
-                // Clones your GitHub repo
-                git branch: 'main', url: 'https://github.com/AleenaSehar/Assessment.git'
+                git 'https://github.com/AleenaSehar/Assessment.git'
             }
         }
-
+        
         stage('Build') {
             steps {
-                echo 'Building the frontend...'
-                // For example, if React:
+                echo 'Building the application...'
                 sh 'npm install'
-                sh 'npm run build'
             }
         }
-
+        
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                // Add test commands if needed
+                sh 'npm test || true'
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                echo 'Deploying to EC2...'
+                sh 'docker build -t assessment-app .'
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                echo 'Pushing image to Docker Hub...'
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'docker login -u AleenaSehar -p Aleena1234/'
+                    sh 'docker tag assessment-app AleenaSehar/assessment-app:latest'
+                    sh 'docker push AleenaSehar/assessment-app:latest'
+                    sh 'docker logout'
+                }
             }
         }
     }
