@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <nav style={{
-      position: 'sticky',
+      position: 'absolute',
       top: '0',
       zIndex: '50',
       background: scrolled 
