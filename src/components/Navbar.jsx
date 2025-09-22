@@ -17,7 +17,7 @@ export default function Navbar() {
 
   return (
     <nav style={{
-      position: 'absolute',
+      position: 'relative',
       top: '0',
       zIndex: '50',
       background: scrolled 
